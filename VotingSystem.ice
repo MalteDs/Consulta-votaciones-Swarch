@@ -1,56 +1,47 @@
-module Consulta {
-    module votaciones {
+module VotingSystem {
+    struct VotingTable {
+        string location;        // Dirección del lugar de votación
+        string city;            // Ciudad donde se encuentra la mesa
+    }
 
-        // Estructura para representar la asignación de mesas de votación
-        struct VotingTable {
-            int tableId;            // ID único de la mesa de votación
-            string location;        // Dirección del lugar de votación
-            string city;            // Ciudad donde se encuentra la mesa
-        }
+    struct VoterInfo {
+        string documentId;      // Documento de identidad del votante
+        VotingTable table;      // Información de la mesa asignada
+        bool isPrimeFactorsPrime; // Indica si el número de factores primos es primo (1: sí, 0: no)
+        float responseTime;     // Tiempo en segundos que tomó la consulta
+    }
 
-        // Estructura para representar los detalles de un votante
-        struct VoterInfo {
-            string documentId;      // Documento de identidad del votante
-            VotingTable table;      // Información de la mesa asignada
-            bool isPrimeFactorsPrime; // Indica si el número de factores primos es primo (1: sí, 0: no)
-            float responseTime;     // Tiempo en segundos que tomó la consulta
-        }
+    exception VotingSystemException {
+        string message;         // Mensaje descriptivo del error
+    }
 
-        // Excepción para errores relacionados con el sistema
-        exception VotingSystemException {
-            string message;         // Mensaje descriptivo del error
-        }
+    sequence<string> StringSeq;
+    sequence<VoterInfo> VoterInfoSeq;
 
-        // Declaración de secuencias
-        sequence<string> StringSeq;
-        sequence<VoterInfo> VoterInfoSeq;
+    interface VotingService {
+        void registerClient(string clientId)
+            throws VotingSystemException;
 
-        // Interfaz para el servicio de votaciones
-        interface VotingSystem {
+        void unregisterClient(string clientId)
+            throws VotingSystemException;
 
-            // Registra un cliente como observador
-            void registerClient(string clientId)
-                throws VotingSystemException;
+        VoterInfo getVotingInfo(string documentId)
+            throws VotingSystemException;
 
-            // Remueve un cliente registrado
-            void unregisterClient(string clientId)
-                throws VotingSystemException;
+        VoterInfoSeq performBatchQuery(string clientId, StringSeq documentIds)
+            throws VotingSystemException;
 
-            // Consulta información de votación por documento de identidad
-            VoterInfo getVotingInfo(string documentId)
-                throws VotingSystemException;
+        void notifyObservers(string message)
+            throws VotingSystemException;
 
-            // Realiza múltiples consultas concurrentes desde un cliente
-            VoterInfoSeq performBatchQuery(string clientId, StringSeq documentIds)
-                throws VotingSystemException;
+        StringSeq getServerLog()
+            throws VotingSystemException;
 
-            // Notifica a los clientes registrados con datos de consulta
-            void notifyObservers(string message)
-                throws VotingSystemException;
+        void distributeTasks(StringSeq documentIds)
+            throws VotingSystemException;
+    }
 
-            // Obtiene un log resumido del servidor
-            StringSeq getServerLog()
-                throws VotingSystemException;
-        }
+    interface Observer {
+        void update(string message);
     }
 }
