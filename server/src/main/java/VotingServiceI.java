@@ -1,14 +1,9 @@
 import com.zeroc.Ice.*;
-import com.zeroc.Ice.Object;
 
 import java.sql.*;
 import java.sql.Connection;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import javax.xml.crypto.Data;
 
 import VotingSystem.ObserverPrx;
 import VotingSystem.VoterInfo;

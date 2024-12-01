@@ -15,6 +15,7 @@ subprojects {
 
     dependencies {
         implementation 'com.zeroc:ice:3.7.6'
+        implementation 'org.postgresql:postgresql:42.2.18'
     }
 
     slice {
