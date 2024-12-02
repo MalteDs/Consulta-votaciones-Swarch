@@ -8,10 +8,15 @@ public class Server {
             ObjectAdapter adapter = communicator.createObjectAdapter("VotingServiceAdapter");
 
             // Registrar la implementación del servicio
-            adapter.add(new VotingServiceI(), Util.stringToIdentity("VotingService"));
+            VotingServiceI votingService = new VotingServiceI();
+            adapter.add(votingService, Util.stringToIdentity("VotingService"));
 
             // Activar el adaptador
             adapter.activate();
+
+            ServerMenu serverMenu = new ServerMenu(votingService);
+            Thread menuThread = new Thread(() -> serverMenu.start());
+            menuThread.start();
 
             System.out.println("Servidor de votaciones iniciado. Esperando conexiones...");
             communicator.waitForShutdown();
