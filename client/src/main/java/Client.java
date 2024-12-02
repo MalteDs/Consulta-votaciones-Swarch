@@ -66,12 +66,6 @@ public class Client {
                "Tiempo de respuesta: " + voterInfo.responseTime + "s");    }
 
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.out.println("Usage: Client <server-endpoint>");
-            return;
-        }
-
-        String serverEndpoint = args[0];
         String clientId;
 
         try (Communicator communicator = Util.initialize(args, "client.cfg")) {
