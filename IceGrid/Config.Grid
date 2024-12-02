@@ -1,0 +1,13 @@
+# Nombre de la instancia de IceGrid
+IceGrid.InstanceName=VotingSystemGrid
+
+# Configuración del localizador de IceGrid
+Ice.Default.Locator=VotingSystemGrid/Locator:tcp -h localhost -p 4061
+
+# Configuración del registro de IceGrid
+IceGrid.Registry.Client.Endpoints=tcp -h localhost -p 4061
+IceGrid.Registry.Server.Endpoints=tcp -h localhost -p 4062
+IceGrid.Registry.Internal.Endpoints=tcp -h localhost -p 4063
+
+# Configuración del nodo de IceGrid
+IceGrid.Node.Endpoints=tcp -h localhost -p 4064
