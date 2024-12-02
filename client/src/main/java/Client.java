@@ -63,14 +63,19 @@ public class Client {
                "Mesa: " + voterInfo.table.location + ", " + voterInfo.table.city + "\n" +
                "Puesto de votación: " + voterInfo.table.votingPlace + "\n" +
                "Es primo: " + (voterInfo.isPrimeFactorsPrime ? "Sí" : "No") + "\n" +
-               "Tiempo de respuesta: " + voterInfo.responseTime + "s");
-    }
+               "Tiempo de respuesta: " + voterInfo.responseTime + "s");    }
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: Client <server-endpoint>");
+            return;
+        }
+
+        String serverEndpoint = args[0];
         String clientId;
 
         try (Communicator communicator = Util.initialize(args, "client.cfg")) {
-            ObjectPrx base = communicator.stringToProxy("VotingService:default -p 10000");
+            ObjectPrx base = communicator.stringToProxy("VotingService:" + serverEndpoint);
             VotingServicePrx votingService = VotingServicePrx.checkedCast(base);
             if (votingService == null) {
                 throw new RuntimeException("No se pudo conectar con el servidor.");
@@ -84,23 +89,20 @@ public class Client {
                 System.err.println("No se pudo obtener la dirección IP del cliente: " + e.getMessage());
             }
 
-            
-
             Scanner scanner = new Scanner(System.in);
             System.out.print("Ingrese el tamaño del pool de hilos: ");
             int poolSize = scanner.nextInt();
             scanner.nextLine(); // Consumir la nueva línea
 
+            ObserverI observer = new ObserverI(poolSize);
             ObjectAdapter adapter = communicator.createObjectAdapter("");
-            ObserverPrx observer = ObserverPrx.uncheckedCast(
-                adapter.add(new ObserverI(poolSize), Util.stringToIdentity(clientId))
-            );
+            adapter.add(observer, Util.stringToIdentity(clientId));
             adapter.activate();
 
             Client client = new Client(votingService, poolSize, clientId);
             client.register();
 
-            System.out.println("Cliente registrado con ID: " + clientId);
+            // System.out.println("Cliente registrado con ID: " + clientId);
 
             while (true) {
                 System.out.print("Ingrese el ID del votante (o 'exit' para salir): ");
