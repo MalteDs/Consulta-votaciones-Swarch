@@ -84,7 +84,12 @@ public class VotingServiceI implements VotingService {
                 VoterInfo voterInfo = new VoterInfo(documentId, table, isPrimeFactorsPrime, queryTime);
 
                 // Registrar la consulta en el log
-                logSingleQuery(current.id.name, voterInfo);
+                if(current==null){
+                    logSingleQuery("SERVER", voterInfo);
+                }else{
+                    logSingleQuery(documentId, voterInfo);
+                }
+                
 
                 // Devolver la información del votante
                 return voterInfo;

@@ -51,8 +51,7 @@ public class ServerMenu {
                 documentIds.add(line.trim());
             }
             reader.close();
-
-            System.out.println("Procesando " + documentIds.size() + " documentos...");
+            System.out.println("\nProcesando " + documentIds.size() + " documentos...");
             votingService.distributeTasks(documentIds.toArray(new String[0]), null);
 
         } catch (IOException e) {
