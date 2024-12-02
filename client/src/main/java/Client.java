@@ -65,49 +65,42 @@ public class Client {
                "Es primo: " + (voterInfo.isPrimeFactorsPrime ? "Sí" : "No") + "\n" +
                "Tiempo de respuesta: " + voterInfo.responseTime + "s");    }
 
-    public static void main(String[] args) {
-        String clientId;
-
-        try (Communicator communicator = Util.initialize(args, "client.cfg")) {
-            ObjectPrx base = communicator.stringToProxy("VotingService:default -p 10000");
-            VotingServicePrx votingService = VotingServicePrx.checkedCast(base);
-            if (votingService == null) {
-                throw new RuntimeException("No se pudo conectar con el servidor.");
-            }
-
-            try {
-                InetAddress localHost = InetAddress.getLocalHost();
-                clientId = localHost.getHostAddress();
-            } catch (UnknownHostException e) {
-                clientId = "UnknownHost"; // En caso de error, utiliza un valor por defecto
-                System.err.println("No se pudo obtener la dirección IP del cliente: " + e.getMessage());
-            }
-
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Ingrese el tamaño del pool de hilos: ");
-            int poolSize = scanner.nextInt();
-            scanner.nextLine(); // Consumir la nueva línea
-
-            ObserverI observer = new ObserverI(poolSize, votingService);
-            ObjectAdapter adapter = communicator.createObjectAdapter("ClientAdapter");
-            adapter.add(observer, Util.stringToIdentity(clientId));
-            adapter.activate();
-
-            Client client = new Client(votingService, poolSize, clientId);
-            client.register();
-
-            // System.out.println("Cliente registrado con ID: " + clientId);
-
-            while (true) {
-                System.out.print("Ingrese el ID del votante (o 'exit' para salir): ");
-                String documentId = scanner.nextLine();
-                if (documentId.equalsIgnoreCase("exit")) {
-                    break;
+               public static void main(String[] args) {
+                try (Communicator communicator = Util.initialize(args, "client.cfg")) {
+                    ObjectPrx base = communicator.stringToProxy("VotingService:default -p 10000");
+                    VotingServicePrx votingService = VotingServicePrx.checkedCast(base);
+                    if (votingService == null) {
+                        throw new RuntimeException("No se pudo conectar con el servidor.");
+                    }
+            
+                    InetAddress localHost = InetAddress.getLocalHost();
+                    String clientId = localHost.getHostAddress();
+            
+                    Scanner scanner = new Scanner(System.in);
+                    System.out.print("Ingrese el tamaño del pool de hilos: ");
+                    int poolSize = scanner.nextInt();
+                    scanner.nextLine();
+            
+                    ObserverI observer = new ObserverI(poolSize, votingService);
+                    ObjectAdapter adapter = communicator.createObjectAdapter("ClientAdapter");
+                    adapter.add(observer, Util.stringToIdentity(clientId));
+                    adapter.activate();
+            
+                    Client client = new Client(votingService, poolSize, clientId);
+                    client.register();
+            
+                    while (true) {
+                        System.out.print("Ingrese el ID del votante (o 'exit' para salir): ");
+                        String documentId = scanner.nextLine();
+                        if (documentId.equalsIgnoreCase("exit")) {
+                            break;
+                        }
+                        client.queryVotingInfo(documentId);
+                    }
+            
+                    client.unregister();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                client.queryVotingInfo(documentId);
             }
-
-            client.unregister();
-        }
-    }
 }
