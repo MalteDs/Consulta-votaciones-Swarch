@@ -69,7 +69,7 @@ public class Client {
         String clientId;
 
         try (Communicator communicator = Util.initialize(args, "client.cfg")) {
-            ObjectPrx base = communicator.stringToProxy("VotingService:" + serverEndpoint);
+            ObjectPrx base = communicator.stringToProxy("VotingService:default -p 10000");
             VotingServicePrx votingService = VotingServicePrx.checkedCast(base);
             if (votingService == null) {
                 throw new RuntimeException("No se pudo conectar con el servidor.");
@@ -88,7 +88,7 @@ public class Client {
             int poolSize = scanner.nextInt();
             scanner.nextLine(); // Consumir la nueva línea
 
-            ObserverI observer = new ObserverI(poolSize);
+            ObserverI observer = new ObserverI(poolSize, votingService);
             ObjectAdapter adapter = communicator.createObjectAdapter("");
             adapter.add(observer, Util.stringToIdentity(clientId));
             adapter.activate();
