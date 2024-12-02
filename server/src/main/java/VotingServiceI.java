@@ -53,9 +53,10 @@ public class VotingServiceI implements VotingService {
     public VoterInfo getVotingInfo(String documentId, Current current) throws VotingSystemException {
         long startTime = System.nanoTime();
         try {
-            // Consulta para obtener la información del ciudadano y mesa de votación
+            // Consulta para obtener la información del ciudadano, mesa de votación, y nombre/apellido
             String query = "SELECT c.mesa_id, mv.consecutive, pv.nombre AS puesto_nombre, pv.direccion, "
-                        + "m.nombre AS municipio_nombre, d.nombre AS departamento_nombre "
+                        + "m.nombre AS municipio_nombre, d.nombre AS departamento_nombre, "
+                        + "c.nombre AS first_name, c.apellido AS last_name "
                         + "FROM ciudadano c "
                         + "JOIN mesa_votacion mv ON mv.id = c.mesa_id "
                         + "JOIN puesto_votacion pv ON pv.id = mv.puesto_id "
@@ -71,8 +72,14 @@ public class VotingServiceI implements VotingService {
                 // Obtener los resultados
                 VotingTable table = new VotingTable(
                     rs.getString("puesto_nombre"),  // Nombre del puesto
-                    rs.getString("municipio_nombre") // Nombre del municipio
+                    rs.getString("municipio_nombre"), // Nombre del municipio
+                    rs.getString("departamento_nombre"), // Nombre del departamento
+                    rs.getString("direccion") // Dirección del puesto de votación
                 );
+
+                // Obtener el nombre y apellido del votante
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
 
                 // Determinar si el número de factores primos es primo
                 boolean isPrimeFactorsPrime = isPrime(countPrimeFactors(Integer.parseInt(documentId)));
@@ -80,8 +87,15 @@ public class VotingServiceI implements VotingService {
                 long endTime = System.nanoTime();
                 float queryTime = (endTime - startTime) / 1e9f;
 
-                // Crear el objeto VoterInfo
-                VoterInfo voterInfo = new VoterInfo(documentId, table, isPrimeFactorsPrime, queryTime);
+                // Crear el objeto VoterInfo con todos los campos
+                VoterInfo voterInfo = new VoterInfo(
+                    documentId, // ID del documento
+                    table, // Información de la mesa
+                    isPrimeFactorsPrime, // Si el número de factores primos es primo
+                    queryTime, // Tiempo de respuesta
+                    firstName, // Primer nombre
+                    lastName // Apellido
+                );
 
                 // Registrar la consulta en el log
                 logSingleQuery(current.id.name, voterInfo);
