@@ -89,7 +89,7 @@ public class Client {
             scanner.nextLine(); // Consumir la nueva línea
 
             ObserverI observer = new ObserverI(poolSize, votingService);
-            ObjectAdapter adapter = communicator.createObjectAdapter("");
+            ObjectAdapter adapter = communicator.createObjectAdapter("ClientAdapter");
             adapter.add(observer, Util.stringToIdentity(clientId));
             adapter.activate();
 

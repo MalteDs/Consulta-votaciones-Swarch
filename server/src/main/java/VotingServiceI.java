@@ -206,6 +206,7 @@ public class VotingServiceI implements VotingService {
     
                         try {
                             client.updateAsync("Asignadas " + batch.size() + " tareas: " + String.join(", ", batch));
+                            System.out.println(batch.size() + " tareas enviadas a cliente: " + clientId);
                             System.out.println("Tareas enviadas a cliente: " + clientId);
                         } catch (Exception e) {
                             System.err.println("Error notificando al cliente " + clientId + ": " + e.getMessage());
