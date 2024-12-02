@@ -67,11 +67,10 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        String serverEndpoint = args[0];
         String clientId;
 
         try (Communicator communicator = Util.initialize(args, "client.cfg")) {
-            ObjectPrx base = communicator.stringToProxy("VotingService:" + serverEndpoint);
+            ObjectPrx base = communicator.stringToProxy("VotingService:default -p 10000");
             VotingServicePrx votingService = VotingServicePrx.checkedCast(base);
             if (votingService == null) {
                 throw new RuntimeException("No se pudo conectar con el servidor.");
