@@ -9,7 +9,7 @@ public class Server {
 
             // Registrar la implementación del servicio
             VotingServiceI votingService = new VotingServiceI();
-            adapter.add(votingService, Util.stringToIdentity("VotingService"));
+            adapter.add(new VotingServiceI(), Util.stringToIdentity("VotingService"));
 
             // Activar el adaptador
             adapter.activate();
